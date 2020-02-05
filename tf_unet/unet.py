@@ -143,8 +143,7 @@ def create_conv_net(x, keep_prob, channels, n_class, layers=3, features_root=16,
         weight = weight_variable([1, 1, features_root, n_class], stddev)
         bias = bias_variable([n_class], name="bias")
         conv = conv2d(in_node, weight, bias, tf.constant(1.0))
-        #output_map = tf.nn.relu(conv) #original version
-        output_map = tf.round(tf.nn.sigmoid(conv)) #Changed for Binarization 2/5/2020
+        output_map = tf.nn.relu(conv) #original version
         up_h_convs["out"] = output_map
 
     if summaries:
@@ -278,7 +277,7 @@ class Unet(object):
             y_dummy = np.empty((x_test.shape[0], x_test.shape[1], x_test.shape[2], self.n_class))
             prediction = sess.run(self.predicter, feed_dict={self.x: x_test, self.y: y_dummy, self.keep_prob: 1.})
 
-        return prediction
+        return tf.round(prediction)
 
     def save(self, sess, model_path):
         """

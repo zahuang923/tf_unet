@@ -143,8 +143,7 @@ def create_conv_net(x, keep_prob, channels, n_class, layers=3, features_root=16,
         weight = weight_variable([1, 1, features_root, n_class], stddev)
         bias = bias_variable([n_class], name="bias")
         conv = conv2d(in_node, weight, bias, tf.constant(1.0))
-#        output_map = tf.nn.relu(conv) #original version
-        output_map = tf.nn.sigmoid(conv) #binarization modification 2/5/2020
+        output_map = tf.nn.relu(conv)
         up_h_convs["out"] = output_map
 
     if summaries:
@@ -208,7 +207,7 @@ class Unet(object):
                                                tf.reshape(pixel_wise_softmax(logits), [-1, n_class]))
 
         with tf.name_scope("results"):
-            self.predicter = pixel_wise_softmax(logits)
+            self.predicter = tf.round(pixel_wise_softmax(logits)) #added tf.round() 2/5/2020
             self.correct_pred = tf.equal(tf.argmax(self.predicter, 3), tf.argmax(self.y, 3))
             self.accuracy = tf.reduce_mean(tf.cast(self.correct_pred, tf.float32))
 

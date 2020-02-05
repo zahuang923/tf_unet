@@ -31,7 +31,7 @@ from tf_unet import util
 from tf_unet.layers import (weight_variable, weight_variable_devonc, bias_variable,
                             conv2d, deconv2d, max_pool, crop_and_concat, pixel_wise_softmax,
                             cross_entropy)
-
+print("this module is being imported")
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
 
@@ -206,7 +206,7 @@ class Unet(object):
                                                tf.reshape(pixel_wise_softmax(logits), [-1, n_class]))
 
         with tf.name_scope("results"):
-            self.predicter = pixel_wise_softmax(logits)
+            self.predicter = tf.round(tf.nn.sigmoid(pixel_wise_softmax(logits)))
             self.correct_pred = tf.equal(tf.argmax(self.predicter, 3), tf.argmax(self.y, 3))
             self.accuracy = tf.reduce_mean(tf.cast(self.correct_pred, tf.float32))
 
